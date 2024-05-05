@@ -1,12 +1,12 @@
 version: '2'
 
 services:
-    catalogue:
+    reviews:
         build:
             context: .
-            dockerfile: ./docker/catalogue/Dockerfile
-        image: weaveworksdemos/catalogue
-        hostname: catalogue
+            dockerfile: ./docker/reviews/Dockerfile
+        image: weaveworksdemos/reviews
+        hostname: reviews
         restart: always
         cap_drop:
             - all
@@ -17,11 +17,11 @@ services:
             - reschedule=on-node-failure
         ports:
             - "8080:80"
-    catalogue-db:
+    reviews-db:
         build:
-            context: ./docker/catalogue-db/
-        image: weaveworksdemos/catalogue-db
-        hostname: catalogue-db
+            context: ./docker/reviews-db/
+        image: weaveworksdemos/reviews-db
+        hostname: reviews-db
         restart: always
         environment:
             - reschedule=on-node-failure

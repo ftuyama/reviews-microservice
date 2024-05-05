@@ -19,14 +19,14 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"github.com/microservices-demo/catalogue"
+	"github.com/ftuyama/reviews"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/weaveworks/common/middleware"
 	"golang.org/x/net/context"
 )
 
 const (
-	ServiceName = "catalogue"
+	ServiceName = "reviews"
 )
 
 var (
@@ -45,7 +45,7 @@ func main() {
 	var (
 		port   = flag.String("port", "80", "Port to bind HTTP listener") // TODO(pb): should be -addr, default ":80"
 		images = flag.String("images", "./images/", "Image path")
-		dsn    = flag.String("DSN", "catalogue_user:default_password@tcp(catalogue-db:3306)/socksdb", "Data Source Name: [username[:password]@][protocol[(address)]]/dbname")
+		dsn    = flag.String("DSN", "reviews_user:default_password@tcp(reviews-db:3306)/socksdb", "Data Source Name: [username[:password]@][protocol[(address)]]/dbname")
 		zip    = flag.String("zipkin", os.Getenv("ZIPKIN"), "Zipkin address")
 	)
 	flag.Parse()
@@ -120,17 +120,17 @@ func main() {
 	}
 
 	// Service domain.
-	var service catalogue.Service
+	var service reviews.Service
 	{
-		service = catalogue.NewCatalogueService(db, logger)
-		service = catalogue.LoggingMiddleware(logger)(service)
+		service = reviews.NewReviewsService(db, logger)
+		service = reviews.LoggingMiddleware(logger)(service)
 	}
 
 	// Endpoint domain.
-	endpoints := catalogue.MakeEndpoints(service, tracer)
+	endpoints := reviews.MakeEndpoints(service, tracer)
 
 	// HTTP router
-	router := catalogue.MakeHTTPHandler(ctx, endpoints, *images, logger, tracer)
+	router := reviews.MakeHTTPHandler(ctx, endpoints, *images, logger, tracer)
 
 	httpMiddleware := []middleware.Interface{
 		middleware.Instrument{

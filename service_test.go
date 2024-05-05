@@ -1,4 +1,4 @@
-package catalogue
+package reviews
 
 import (
 	"os"
@@ -24,7 +24,7 @@ var (
 
 var logger log.Logger
 
-func TestCatalogueServiceList(t *testing.T) {
+func TestReviewsServiceList(t *testing.T) {
 	logger = log.NewLogfmtLogger(os.Stderr)
 	db, mock, err := sqlmock.New()
 	if err != nil {
@@ -55,7 +55,7 @@ func TestCatalogueServiceList(t *testing.T) {
 		AddRow(s3.ID, s3.Name, s3.Description, s3.Price, s3.Count, s3.ImageURL[0], s3.ImageURL[1], strings.Join(s3.Tags, ",")).
 		AddRow(s5.ID, s5.Name, s5.Description, s5.Price, s5.Count, s5.ImageURL[0], s5.ImageURL[1], strings.Join(s5.Tags, ",")))
 
-	s := NewCatalogueService(sqlxDB, logger)
+	s := NewReviewsService(sqlxDB, logger)
 	for _, testcase := range []struct {
 		tags     []string
 		order    string
@@ -103,7 +103,7 @@ func TestCatalogueServiceList(t *testing.T) {
 	}
 }
 
-func TestCatalogueServiceCount(t *testing.T) {
+func TestReviewsServiceCount(t *testing.T) {
 	logger = log.NewLogfmtLogger(os.Stderr)
 	db, mock, err := sqlmock.New()
 	if err != nil {
@@ -118,7 +118,7 @@ func TestCatalogueServiceCount(t *testing.T) {
 	mock.ExpectPrepare("SELECT *").ExpectQuery().WillReturnRows(sqlmock.NewRows(cols).AddRow(4))
 	mock.ExpectPrepare("SELECT *").ExpectQuery().WillReturnRows(sqlmock.NewRows(cols).AddRow(1))
 
-	s := NewCatalogueService(sqlxDB, logger)
+	s := NewReviewsService(sqlxDB, logger)
 	for _, testcase := range []struct {
 		tags []string
 		want int
@@ -141,7 +141,7 @@ func TestCatalogueServiceCount(t *testing.T) {
 	}
 }
 
-func TestCatalogueServiceGet(t *testing.T) {
+func TestReviewsServiceGet(t *testing.T) {
 	logger = log.NewLogfmtLogger(os.Stderr)
 	db, mock, err := sqlmock.New()
 	if err != nil {
@@ -159,7 +159,7 @@ func TestCatalogueServiceGet(t *testing.T) {
 	mock.ExpectQuery("SELECT *").WillReturnRows(sqlmock.NewRows(cols).
 		AddRow(s3.ID, s3.Name, s3.Description, s3.Price, s3.Count, s3.ImageURL[0], s3.ImageURL[1], strings.Join(s3.Tags, ",")))
 
-	s := NewCatalogueService(sqlxDB, logger)
+	s := NewReviewsService(sqlxDB, logger)
 	{
 		// Error case
 		for _, id := range []string{
@@ -189,7 +189,7 @@ func TestCatalogueServiceGet(t *testing.T) {
 	}
 }
 
-func TestCatalogueServiceTags(t *testing.T) {
+func TestReviewsServiceTags(t *testing.T) {
 	logger = log.NewLogfmtLogger(os.Stderr)
 	db, mock, err := sqlmock.New()
 	if err != nil {
@@ -205,7 +205,7 @@ func TestCatalogueServiceTags(t *testing.T) {
 		AddRow(tags[1]).
 		AddRow(tags[2]))
 
-	s := NewCatalogueService(sqlxDB, logger)
+	s := NewReviewsService(sqlxDB, logger)
 
 	have, err := s.Tags()
 	if err != nil {

@@ -1,4 +1,4 @@
-package catalogue
+package reviews
 
 // endpoints.go contains the endpoint definitions, including per-method request
 // and response structs. Endpoints are the binding between the service and
@@ -24,9 +24,9 @@ type Endpoints struct {
 // backed by the given service.
 func MakeEndpoints(s Service, tracer stdopentracing.Tracer) Endpoints {
 	return Endpoints{
-		ListEndpoint:   opentracing.TraceServer(tracer, "GET /catalogue")(MakeListEndpoint(s)),
-		CountEndpoint:  opentracing.TraceServer(tracer, "GET /catalogue/size")(MakeCountEndpoint(s)),
-		GetEndpoint:    opentracing.TraceServer(tracer, "GET /catalogue/{id}")(MakeGetEndpoint(s)),
+		ListEndpoint:   opentracing.TraceServer(tracer, "GET /reviews")(MakeListEndpoint(s)),
+		CountEndpoint:  opentracing.TraceServer(tracer, "GET /reviews/size")(MakeCountEndpoint(s)),
+		GetEndpoint:    opentracing.TraceServer(tracer, "GET /reviews/{id}")(MakeGetEndpoint(s)),
 		TagsEndpoint:   opentracing.TraceServer(tracer, "GET /tags")(MakeTagsEndpoint(s)),
 		HealthEndpoint: opentracing.TraceServer(tracer, "GET /health")(MakeHealthEndpoint(s)),
 	}
