@@ -5,6 +5,7 @@ import (
 )
 
 type Review struct {
+	ID 				 string    `json:"id" bson:"id"`
 	CustomerId string    `json:"customerId" bson:"customerId"`
 	ItemId     string    `json:"itemId" bson:"itemId"`
 	CreatedAt  time.Time `json:"createdAt" bson:"createdAt"`

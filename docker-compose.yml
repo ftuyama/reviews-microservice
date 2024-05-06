@@ -13,7 +13,7 @@ services:
             - NET_BIND_SERVICE
         read_only: true
         environment:
-            - MONGO_HOST=reviews-db:27017
+            - MONGO_HOST=reviews-db:27016
             - reschedule=on-node-failure
         ports:
             - "8080:80"
@@ -35,4 +35,4 @@ services:
         environment:
             - reschedule=on-node-failure
         ports:
-            - "27017:27017"
+            - "27016:27016"

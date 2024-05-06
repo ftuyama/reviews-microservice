@@ -10,7 +10,7 @@ import (
 	"github.com/go-kit/kit/log"
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
-	"github.com/ftuyama/reviews-microservice/reviews"
+	"reviews/reviews"
 	stdopentracing "github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -22,10 +22,10 @@ var (
 // MakeHTTPHandler mounts the endpoints into a REST-y HTTP handler.
 func MakeHTTPHandler(e Endpoints, logger log.Logger, tracer stdopentracing.Tracer) *mux.Router {
 	r := mux.NewRouter().StrictSlash(false)
-	options := []httptransport.ServerOption{
-		httptransport.ServerErrorLogger(logger),
-		httptransport.ServerErrorEncoder(encodeError),
-	}
+	// options := []httptransport.ServerOption{
+	// 	httptransport.ServerErrorLogger(logger),
+	// 	httptransport.ServerErrorEncoder(encodeError),
+	// }
 
 	// GET /reviews/customer/{id}       GetReviewsByCustomerId
 	// GET /reviews/item/{id}           GetReviewsByItemId
@@ -36,29 +36,46 @@ func MakeHTTPHandler(e Endpoints, logger log.Logger, tracer stdopentracing.Trace
 		e.GetReviewsByCustomerIdEndpoint,
 		decodeGetRequest,
 		encodeResponse,
-		append(options, httptransport.ServerBefore(opentracing.FromHTTPRequest(tracer, "GET /reviews/customer/{id}", logger)))...,
 	))
 	r.Methods("GET").Path("/reviews/item/{id}").Handler(httptransport.NewServer(
 		e.GetReviewsByItemIdEndpoint,
 		decodeGetRequest,
 		encodeResponse,
-		append(options, httptransport.ServerBefore(opentracing.FromHTTPRequest(tracer, "GET /reviews/item/{id}", logger)))...,
 	))
 	r.Methods("POST").Path("/reviews").Handler(httptransport.NewServer(
 		e.CreateReviewEndpoint,
 		decodeReviewRequest,
 		encodeResponse,
-		append(options, httptransport.ServerBefore(opentracing.FromHTTPRequest(tracer, "POST /reviews", logger)))...,
 	))
 	r.Methods("DELETE").Path("/reviews/{id}").Handler(httptransport.NewServer(
 		e.DeleteReviewEndpoint,
 		decodeDeleteReviewRequest,
 		encodeResponse,
-		append(options, httptransport.ServerBefore(opentracing.FromHTTPRequest(tracer, "DELETE /reviews/{id}", logger)))...,
 	))
 
 	r.Handle("/metrics", promhttp.Handler())
 	return r
+}
+
+func encodeError(_ context.Context, err error, w http.ResponseWriter) {
+	code := http.StatusInternalServerError
+	switch err {
+	case ErrUnauthorized:
+		code = http.StatusUnauthorized
+	}
+	w.WriteHeader(code)
+	w.Header().Set("Content-Type", "application/hal+json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"error":       err.Error(),
+		"status_code": code,
+		"status_text": http.StatusText(code),
+	})
+}
+
+func encodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
+	// All of our response objects are JSON serializable, so we just do that.
+	w.Header().Set("Content-Type", "application/hal+json")
+	return json.NewEncoder(w).Encode(response)
 }
 
 func decodeGetRequest(_ context.Context, r *http.Request) (interface{}, error) {
@@ -88,4 +105,9 @@ func decodeDeleteReviewRequest(_ context.Context, r *http.Request) (interface{},
 		return d, nil
 	}
 	return d, ErrInvalidRequest
+}
+
+type deleteRequest struct {
+	Entity string
+	ID     string
 }

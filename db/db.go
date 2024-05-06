@@ -6,11 +6,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ftuyama/reviews-microservice/reviews"
+	"reviews/reviews"
 )
 
-// ReviewDatabase represents an interface for managing reviews.
-type ReviewDatabase interface {
+// Database represents an interface for managing reviews.
+type Database interface {
+	Init() error
 	CreateReview(*reviews.Review) error
 	GetReviewsByCustomerId(string) ([]reviews.Review, error)
 	GetReviewsByItemId(string) ([]reviews.Review, error)
@@ -18,8 +19,15 @@ type ReviewDatabase interface {
 }
 
 var (
-	// DefaultReviewDb is the review database set for the microservice.
-	DefaultReviewDb ReviewDatabase
+	database string
+	//DefaultDb is the database set for the microservice
+	DefaultDb Database
+	//DBTypes is a map of DB interfaces that can be used for this service
+	DBTypes = map[string]Database{}
+	//ErrNoDatabaseFound error returnes when database interface does not exists in DBTypes
+	ErrNoDatabaseFound = "No database with name %v registered"
+	//ErrNoDatabaseSelected is returned when no database was designated in the flag or env
+	ErrNoDatabaseSelected = errors.New("No DB selected")
 )
 
 func init() {
@@ -27,7 +35,20 @@ func init() {
 	flag.StringVar(&database, "database", os.Getenv("USER_DATABASE"), "Database to use, Mongodb or ...")
 }
 
-// InitReview initializes the selected review database in DefaultReviewDb.
+//Init inits the selected DB in DefaultDb
+func Init() error {
+	if database == "" {
+		return ErrNoDatabaseSelected
+	}
+	return DefaultDb.Init()
+}
+
+//Register registers the database interface in the DBTypes
+func Register(name string, db Database) {
+	DBTypes[name] = db
+}
+
+// InitReview initializes the selected review database in DefaultDb.
 func InitReview() error {
 	if database == "" {
 		return ErrNoDatabaseSelected
@@ -36,34 +57,34 @@ func InitReview() error {
 	if err != nil {
 		return err
 	}
-	return DefaultReviewDb.Init()
+	return DefaultDb.Init()
 }
 
-// SetReview sets the DefaultReviewDb.
+// SetReview sets the DefaultDb.
 func SetReview() error {
 	if v, ok := DBTypes[database]; ok {
-		DefaultReviewDb = v
+		DefaultDb = v
 		return nil
 	}
 	return fmt.Errorf(ErrNoDatabaseFound, database)
 }
 
-// CreateReview invokes DefaultReviewDb method to create a review.
+// CreateReview invokes DefaultDb method to create a review.
 func CreateReview(r *reviews.Review) error {
-	return DefaultReviewDb.CreateReview(r)
+	return DefaultDb.CreateReview(r)
 }
 
-// GetReviewsByCustomerId invokes DefaultReviewDb method to get reviews by customer ID.
+// GetReviewsByCustomerId invokes DefaultDb method to get reviews by customer ID.
 func GetReviewsByCustomerId(customerId string) ([]reviews.Review, error) {
-	return DefaultReviewDb.GetReviewsByCustomerId(customerId)
+	return DefaultDb.GetReviewsByCustomerId(customerId)
 }
 
-// GetReviewsByItemId invokes DefaultReviewDb method to get reviews by item ID.
+// GetReviewsByItemId invokes DefaultDb method to get reviews by item ID.
 func GetReviewsByItemId(itemId string) ([]reviews.Review, error) {
-	return DefaultReviewDb.GetReviewsByItemId(itemId)
+	return DefaultDb.GetReviewsByItemId(itemId)
 }
 
-// DeleteReview invokes DefaultReviewDb method to delete a review.
+// DeleteReview invokes DefaultDb method to delete a review.
 func DeleteReview(id string) error {
-	return DefaultReviewDb.DeleteReview(id)
+	return DefaultDb.DeleteReview(id)
 }

@@ -1,13 +1,14 @@
-FROM golang:1.7-alpine
+FROM golang:1.22-alpine
 ENV sourcesdir /go/src/github.com/ftuyama/reviews-microservice/
-ENV MONGO_HOST mytestdb:27017
+ENV MONGO_HOST mytestdb:27016
 ENV HATEAOS reviews
 ENV USER_DATABASE mongodb
 
 COPY . ${sourcesdir}
 RUN apk update
 RUN apk add git
-RUN go get -v github.com/Masterminds/glide && cd ${sourcesdir} && glide install && go install
+RUN go mod init reviews
+RUN go mod download && go install
 
 ENTRYPOINT reviews
 EXPOSE 8084

@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/tracing/opentracing"
-	"github.com/ftuyama/reviews-microservice/reviews"
+	"reviews/reviews"
 	stdopentracing "github.com/opentracing/opentracing-go"
 )
 
@@ -49,9 +49,10 @@ func MakeGetReviewsByItemIdEndpoint(s Service) endpoint.Endpoint {
 // MakeCreateReviewEndpoint returns an endpoint via the given service.
 func MakeCreateReviewEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(CreateReviewRequest)
-		id, err := s.CreateReview(req.Review)
-		return postResponse{ID: id}, err
+		// req := request.(CreateReviewRequest)
+		// id, err := s.CreateReview(req.Review)
+		// return postResponse{ID: id}, err
+		return nil, nil
 	}
 }
 
@@ -67,6 +68,11 @@ func MakeDeleteReviewEndpoint(s Service) endpoint.Endpoint {
 	}
 }
 
+type GetRequest struct {
+	ID   string
+	Attr string
+}
+
 type reviewsResponse struct {
 	Reviews []reviews.Review `json:"reviews"`
 }
@@ -76,5 +82,13 @@ type CreateReviewRequest struct {
 }
 
 type DeleteRequest struct {
+	ID string `json:"id"`
+}
+
+type statusResponse struct {
+	Status bool `json:"status"`
+}
+
+type postResponse struct {
 	ID string `json:"id"`
 }

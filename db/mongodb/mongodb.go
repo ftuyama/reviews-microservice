@@ -3,12 +3,11 @@ package mongodb
 import (
 	"errors"
 	"flag"
-	"fmt"
 	"net/url"
 	"os"
 	"time"
 
-	"github.com/ftuyama/reviews-microservice/reviews"
+	"reviews/reviews"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -20,7 +19,7 @@ var (
 	host     string
 	db       = "reviews"
 	// ErrInvalidHexID represents an entity id that is not a valid bson ObjectID
-	ErrInvalidHexID = errors.New("Invalid Id Hex")
+	ErrInvalidHexID = errors.New("invalid Id Hex")
 )
 
 func init() {
@@ -49,7 +48,7 @@ func (m *Mongo) Init() error {
 // MongoReview is a wrapper for reviews
 type MongoReview struct {
 	reviews.Review `bson:",inline"`
-	ID           bson.ObjectId `bson:"_id"`
+	ID             bson.ObjectId `bson:"_id"`
 }
 
 // NewReview returns a new MongoReview
@@ -117,7 +116,7 @@ func (m *Mongo) DeleteReview(id string) error {
 	return c.RemoveId(bson.ObjectIdHex(id))
 }
 
-func getURL() url.URL {
+func getURL() *url.URL {
 	ur := url.URL{
 		Scheme: "mongodb",
 		Host:   host,
@@ -127,7 +126,7 @@ func getURL() url.URL {
 		u := url.UserPassword(name, password)
 		ur.User = u
 	}
-	return ur
+	return &ur
 }
 
 // EnsureIndexes ensures username is unique

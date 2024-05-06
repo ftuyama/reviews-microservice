@@ -5,46 +5,45 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"time"
 
-	"github.com/ftuyama/reviews-microservice/reviews"
+	"reviews/reviews"
 )
 
 var (
 	ErrUnauthorized = errors.New("Unauthorized")
 )
 
-// ReviewService is the reviews service, providing operations for creating, retrieving, and deleting reviews.
-type ReviewService interface {
-	CreateReview(review *reviews.Review) error
+// Service is the reviews service, providing operations for creating, retrieving, and deleting reviews.
+type Service interface {
+	CreateReview(review *reviews.Review) (reviews.Review, error)
 	GetReviewsByCustomerId(customerId string) ([]reviews.Review, error)
 	GetReviewsByItemId(itemId string) ([]reviews.Review, error)
 	DeleteReview(id string) error
 }
 
-// NewFixedReviewService returns a simple implementation of the ReviewService interface.
-func NewFixedReviewService() ReviewService {
-	return &fixedReviewService{}
+// NewFixedService returns a simple implementation of the Service interface.
+func NewFixedService() Service {
+	return &fixedService{}
 }
 
-type fixedReviewService struct{}
+type fixedService struct{}
 
-func (s *fixedReviewService) CreateReview(review *reviews.Review) error {
+func (s *fixedService) CreateReview(review *reviews.Review) (reviews.Review, error) {
 	// Your implementation to create a review in the database
-	return nil
+	return reviews.Review{}, nil
 }
 
-func (s *fixedReviewService) GetReviewsByCustomerId(customerId string) ([]reviews.Review, error) {
+func (s *fixedService) GetReviewsByCustomerId(customerId string) ([]reviews.Review, error) {
 	// Your implementation to retrieve reviews by customer ID from the database
 	return nil, nil
 }
 
-func (s *fixedReviewService) GetReviewsByItemId(itemId string) ([]reviews.Review, error) {
+func (s *fixedService) GetReviewsByItemId(itemId string) ([]reviews.Review, error) {
 	// Your implementation to retrieve reviews by item ID from the database
 	return nil, nil
 }
 
-func (s *fixedReviewService) DeleteReview(id string) error {
+func (s *fixedService) DeleteReview(id string) error {
 	// Your implementation to delete a review from the database
 	return nil
 }
