@@ -9,7 +9,7 @@ A reviews service that provides reviews capabilities to products.
 ```bash
 go mod init reviews
 go mod download
-go build -o reviews
+go build -o app
 ```
 
 >## Run
@@ -18,7 +18,7 @@ go build -o reviews
 
 ```bash
 docker-compose up -d reviews-db
-./reviews -port=8080 -database=mongodb -mongo-host=localhost:27016
+./app -port=8080 -database=mongodb -mongo-host=localhost:27016
 ```
 
 ### Using Docker Compose

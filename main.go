@@ -14,7 +14,6 @@ import (
 
 	"github.com/go-kit/kit/log"
 	stdopentracing "github.com/opentracing/opentracing-go"
-	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	"reviews/api"
 	"reviews/db"
 	"reviews/db/mongodb"
@@ -24,20 +23,11 @@ var (
 	port string
 )
 
-var (
-	HTTPLatency = stdprometheus.NewHistogramVec(stdprometheus.HistogramOpts{
-		Name:    "http_request_duration_seconds",
-		Help:    "Time (in seconds) spent serving HTTP requests.",
-		Buckets: stdprometheus.DefBuckets,
-	}, []string{"method", "path", "status_code", "isWS"})
-)
-
 const (
 	ServiceName = "reviews"
 )
 
 func init() {
-	stdprometheus.MustRegister(HTTPLatency)
 	flag.StringVar(&port, "port", "8084", "Port on which to run")
 	db.Register("mongodb", &mongodb.Mongo{})
 }
@@ -89,24 +79,6 @@ func main() {
 	var service api.Service
 	{
 		service = api.NewFixedService()
-		// service = api.LoggingMiddleware(logger)(service)
-		// service = api.NewInstrumentingService(
-		// 	kitprometheus.NewCounterFrom(
-		// 		stdprometheus.CounterOpts{
-		// 			Namespace: "microservices_demo",
-		// 			Subsystem: "reviews",
-		// 			Name:      "request_count",
-		// 			Help:      "Number of requests received.",
-		// 		},
-		// 		fieldKeys),
-		// 	kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
-		// 		Namespace: "microservices_demo",
-		// 		Subsystem: "reviews",
-		// 		Name:      "request_latency_microseconds",
-		// 		Help:      "Total duration of requests in microseconds.",
-		// 	}, fieldKeys),
-		// 	service,
-		// )
 	}
 
 	// Endpoint domain.

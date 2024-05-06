@@ -12,7 +12,6 @@ import (
 	"github.com/gorilla/mux"
 	"reviews/reviews"
 	stdopentracing "github.com/opentracing/opentracing-go"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 var (
@@ -52,8 +51,6 @@ func MakeHTTPHandler(e Endpoints, logger log.Logger, tracer stdopentracing.Trace
 		decodeDeleteReviewRequest,
 		encodeResponse,
 	))
-
-	r.Handle("/metrics", promhttp.Handler())
 	return r
 }
 
