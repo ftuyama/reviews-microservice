@@ -1,6 +1,6 @@
 FROM golang:1.22-alpine
 ENV sourcesdir /go/src/github.com/ftuyama/reviews-microservice/
-ENV MONGO_HOST mytestdb:27016
+ENV MONGO_HOST reviews-db:27016
 ENV HATEAOS reviews
 ENV USER_DATABASE mongodb
 

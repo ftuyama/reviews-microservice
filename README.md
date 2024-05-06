@@ -7,9 +7,8 @@ A reviews service that provides reviews capabilities to products.
 ### Using Go natively
 
 ```bash
-go mod init reviews
-go mod download
-go build -o app
+make install
+make build
 ```
 
 >## Run
@@ -17,8 +16,8 @@ go build -o app
 ### Natively
 
 ```bash
-docker-compose up -d reviews-db
-./app -port=8080 -database=mongodb -mongo-host=localhost:27016
+make docker
+make run
 ```
 
 ### Using Docker Compose

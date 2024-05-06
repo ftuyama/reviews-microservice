@@ -35,4 +35,4 @@ services:
         environment:
             - reschedule=on-node-failure
         ports:
-            - "27016:27016"
+            - "27016:27017"

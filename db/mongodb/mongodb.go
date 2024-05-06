@@ -71,6 +71,23 @@ func (m *Mongo) CreateReview(r *reviews.Review) error {
 	return nil
 }
 
+// GetReviews retrieves reviews
+func (m *Mongo) GetReviews() ([]reviews.Review, error) {
+	s := m.Session.Copy()
+	defer s.Close()
+	var mrs []MongoReview
+	c := s.DB("").C("reviews")
+	err := c.Find(nil).All(&mrs)
+	if err != nil {
+		return nil, err
+	}
+	reviews := make([]reviews.Review, len(mrs))
+	for i, mr := range mrs {
+		reviews[i] = mr.Review
+	}
+	return reviews, nil
+}
+
 // GetReviewsByCustomerId retrieves reviews by customer ID
 func (m *Mongo) GetReviewsByCustomerId(customerId string) ([]reviews.Review, error) {
 	s := m.Session.Copy()

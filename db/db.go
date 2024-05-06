@@ -13,6 +13,7 @@ import (
 type Database interface {
 	Init() error
 	CreateReview(*reviews.Review) error
+	GetReviews() ([]reviews.Review, error)
 	GetReviewsByCustomerId(string) ([]reviews.Review, error)
 	GetReviewsByItemId(string) ([]reviews.Review, error)
 	DeleteReview(string) error
@@ -40,7 +41,20 @@ func Init() error {
 	if database == "" {
 		return ErrNoDatabaseSelected
 	}
+	err := Set()
+	if err != nil {
+		return err
+	}
 	return DefaultDb.Init()
+}
+
+//Set the DefaultDb
+func Set() error {
+	if v, ok := DBTypes[database]; ok {
+		DefaultDb = v
+		return nil
+	}
+	return fmt.Errorf(ErrNoDatabaseFound, database)
 }
 
 //Register registers the database interface in the DBTypes
@@ -72,6 +86,11 @@ func SetReview() error {
 // CreateReview invokes DefaultDb method to create a review.
 func CreateReview(r *reviews.Review) error {
 	return DefaultDb.CreateReview(r)
+}
+
+// GetReviews invokes DefaultDb method to get reviews by customer ID.
+func GetReviews() ([]reviews.Review, error) {
+	return DefaultDb.GetReviews()
 }
 
 // GetReviewsByCustomerId invokes DefaultDb method to get reviews by customer ID.

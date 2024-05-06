@@ -17,6 +17,24 @@ insert_reviews({
     "comment": "Excellent product!"
 });
 
+insert_reviews({
+    "customerId": "57a98d98e4b00679b4a830b2",
+    "itemId": "837ab141-399e-4c1f-9abc-bace40296bac",
+    "createdAt": new Date("2024-04-25T00:09:22.198Z"),
+    "updatedAt": new Date("2024-04-25T00:09:22.198Z"),
+    "rating": 3,
+    "comment": "Good product"
+});
+
+insert_reviews({
+    "customerId": "57a98d98e4b00679b4a830b2",
+    "itemId": "837ab141-399e-4c1f-9abc-bace40296bac",
+    "createdAt": new Date("2024-04-25T00:09:22.198Z"),
+    "updatedAt": new Date("2024-04-25T00:09:22.198Z"),
+    "rating": 2,
+    "comment": "Bad product"
+});
+
 print("_______REVIEW DATA_______");
 db.reviews.find().forEach(get_results);
 print("______END REVIEW DATA_____");

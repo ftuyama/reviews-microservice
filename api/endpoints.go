@@ -11,6 +11,7 @@ import (
 
 // Endpoints collects the endpoints that comprise the Service.
 type Endpoints struct {
+	GetReviewsEndpoint 						 endpoint.Endpoint
 	GetReviewsByCustomerIdEndpoint endpoint.Endpoint
 	GetReviewsByItemIdEndpoint     endpoint.Endpoint
 	CreateReviewEndpoint           endpoint.Endpoint
@@ -21,10 +22,19 @@ type Endpoints struct {
 // backed by the given service.
 func MakeEndpoints(s Service, tracer stdopentracing.Tracer) Endpoints {
 	return Endpoints{
+		GetReviewsEndpoint: 						opentracing.TraceServer(tracer, "GET /reviews")(MakeGetReviewsEndpoint(s)),
 		GetReviewsByCustomerIdEndpoint: opentracing.TraceServer(tracer, "GET /reviews/customer/{id}")(MakeGetReviewsByCustomerIdEndpoint(s)),
 		GetReviewsByItemIdEndpoint:     opentracing.TraceServer(tracer, "GET /reviews/item/{id}")(MakeGetReviewsByItemIdEndpoint(s)),
 		CreateReviewEndpoint:           opentracing.TraceServer(tracer, "POST /reviews")(MakeCreateReviewEndpoint(s)),
 		DeleteReviewEndpoint:           opentracing.TraceServer(tracer, "DELETE /reviews/{id}")(MakeDeleteReviewEndpoint(s)),
+	}
+}
+
+// MakeGetReviewsEndpoint returns an endpoint via the given service.
+func MakeGetReviewsEndpoint(s Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		reviews, err := s.GetReviews()
+		return reviewsResponse{Reviews: reviews}, err
 	}
 }
 

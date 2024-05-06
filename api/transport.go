@@ -26,11 +26,17 @@ func MakeHTTPHandler(e Endpoints, logger log.Logger, tracer stdopentracing.Trace
 	// 	httptransport.ServerErrorEncoder(encodeError),
 	// }
 
+	// GET /reviews/       							GetReviews
 	// GET /reviews/customer/{id}       GetReviewsByCustomerId
 	// GET /reviews/item/{id}           GetReviewsByItemId
 	// POST /reviews                    CreateReview
 	// DELETE /reviews/{id}             DeleteReview
 
+	r.Methods("GET").Path("/reviews").Handler(httptransport.NewServer(
+		e.GetReviewsEndpoint,
+		decodeGetRequest,
+		encodeResponse,
+	))
 	r.Methods("GET").Path("/reviews/customer/{id}").Handler(httptransport.NewServer(
 		e.GetReviewsByCustomerIdEndpoint,
 		decodeGetRequest,
