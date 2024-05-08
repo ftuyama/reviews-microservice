@@ -13,10 +13,10 @@ services:
             - NET_BIND_SERVICE
         read_only: true
         environment:
-            - MONGO_HOST=reviews-db:27016
+            - MONGO_HOST=reviews-db:27017
             - reschedule=on-node-failure
         ports:
-            - "8080:80"
+            - "8080:8080"
     reviews-db:
         build:
             context: ./docker/reviews-db/

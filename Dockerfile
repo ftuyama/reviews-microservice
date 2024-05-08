@@ -1,14 +1,16 @@
 FROM golang:1.22-alpine
-ENV sourcesdir /go/src/github.com/ftuyama/reviews-microservice/
-ENV MONGO_HOST reviews-db:27016
 ENV HATEAOS reviews
 ENV USER_DATABASE mongodb
 
-COPY . ${sourcesdir}
 RUN apk update
 RUN apk add git
-RUN go mod init reviews
-RUN go mod download && go install
 
-ENTRYPOINT reviews
-EXPOSE 8084
+WORKDIR /app
+COPY . .
+RUN go mod download
+RUN go build -o app .
+
+RUN	chmod +x /app
+
+EXPOSE 8080
+CMD ["./app"]
