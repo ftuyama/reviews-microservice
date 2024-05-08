@@ -89,8 +89,8 @@ func decodeGetRequest(_ context.Context, r *http.Request) (interface{}, error) {
 func decodeGetByItemIdRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	g := GetByItemIdRequest{}
 	u := strings.Split(r.URL.Path, "/")
-	if len(u) > 4 {
-		g.ItemId = u[4]
+	if len(u) > 3 {
+		g.ItemId = u[3]
 	}
 	return g, nil
 }
@@ -98,8 +98,8 @@ func decodeGetByItemIdRequest(_ context.Context, r *http.Request) (interface{}, 
 func decodeGetByItemIdCustomerIdRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	g := GetByItemIdCustomerIdRequest{}
 	u := strings.Split(r.URL.Path, "/")
-	if len(u) > 4 {
-		g.ItemId = u[4]
+	if len(u) > 5 {
+		g.ItemId = u[3]
 		g.CustomerId = u[5]
 	}
 	return g, nil
