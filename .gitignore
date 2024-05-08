@@ -3,3 +3,5 @@ docker/user/bin
 vendor
 
 .DS_Store
+
+app
