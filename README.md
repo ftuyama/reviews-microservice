@@ -29,5 +29,5 @@ docker-compose up
 ## Reviews
 
 ```bash
-curl http://localhost:8080/reviews
+curl http://localhost/reviews
 ```

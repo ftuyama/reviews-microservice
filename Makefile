@@ -7,7 +7,7 @@ build:
 	go build -o app
 
 run:
-	./app -port=8080 -database=mongodb -mongo-host=localhost:27016
+	./app -database=mongodb -mongo-host=localhost:27016
 
 docker_db:
 	docker-compose up -d reviews-db

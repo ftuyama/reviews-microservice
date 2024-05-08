@@ -28,7 +28,7 @@ const (
 )
 
 func init() {
-	flag.StringVar(&port, "port", "8080", "Port on which to run")
+	flag.StringVar(&port, "port", "80", "Port on which to run")
 	db.Register("mongodb", &mongodb.Mongo{})
 }
 

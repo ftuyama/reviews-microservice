@@ -12,5 +12,5 @@ RUN go build -o app .
 
 RUN	chmod +x /app
 
-EXPOSE 8080
+EXPOSE 80
 CMD ["./app"]

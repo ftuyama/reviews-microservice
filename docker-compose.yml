@@ -16,7 +16,7 @@ services:
             - MONGO_HOST=reviews-db:27017
             - reschedule=on-node-failure
         ports:
-            - "8080:8080"
+            - "80:80"
     reviews-db:
         build:
             context: ./docker/reviews-db/
