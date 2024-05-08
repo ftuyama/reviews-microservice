@@ -57,18 +57,21 @@ func NewReview() MongoReview {
 }
 
 // CreateReview inserts a review into MongoDB
-func (m *Mongo) CreateReview(r *reviews.Review) error {
+func (m *Mongo) CreateReview(r *reviews.Review) (*reviews.Review, error) {
 	s := m.Session.Copy()
 	defer s.Close()
+
+	// Set fields
+	now := time.Now()
+	r.CreatedAt = now
+	r.UpdatedAt = now
 	id := bson.NewObjectId()
+	r.ID = id.Hex()
+
 	mr := MongoReview{Review: *r, ID: id}
 	c := s.DB("").C("reviews")
 	_, err := c.UpsertId(mr.ID, mr)
-	if err != nil {
-		return err
-	}
-	r.ID = id.Hex()
-	return nil
+	return r, err
 }
 
 // GetReviews retrieves reviews

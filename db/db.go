@@ -12,7 +12,7 @@ import (
 // Database represents an interface for managing reviews.
 type Database interface {
 	Init() error
-	CreateReview(*reviews.Review) error
+	CreateReview(*reviews.Review) (*reviews.Review, error)
 	GetReviews() ([]reviews.Review, error)
 	GetReviewsByItemIdCustomerId(string, string) ([]reviews.Review, error)
 	GetReviewsByItemId(string) ([]reviews.Review, error)
@@ -84,7 +84,7 @@ func SetReview() error {
 }
 
 // CreateReview invokes DefaultDb method to create a review.
-func CreateReview(r *reviews.Review) error {
+func CreateReview(r *reviews.Review) (*reviews.Review, error) {
 	return DefaultDb.CreateReview(r)
 }
 

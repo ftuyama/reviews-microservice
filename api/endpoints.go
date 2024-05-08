@@ -59,10 +59,9 @@ func MakeGetReviewsByItemIdEndpoint(s Service) endpoint.Endpoint {
 // MakeCreateReviewEndpoint returns an endpoint via the given service.
 func MakeCreateReviewEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		// req := request.(CreateReviewRequest)
-		// id, err := s.CreateReview(req.Review)
-		// return postResponse{ID: id}, err
-		return nil, nil
+		req := request.(CreateReviewRequest)
+		review, err := s.CreateReview(&req.Review)
+		return review, err
 	}
 }
 

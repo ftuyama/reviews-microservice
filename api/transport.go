@@ -49,7 +49,7 @@ func MakeHTTPHandler(e Endpoints, logger log.Logger, tracer stdopentracing.Trace
 	))
 	r.Methods("POST").Path("/reviews").Handler(httptransport.NewServer(
 		e.CreateReviewEndpoint,
-		decodeReviewRequest,
+		decodeCreateReviewRequest,
 		encodeResponse,
 	))
 	r.Methods("DELETE").Path("/reviews/{id}").Handler(httptransport.NewServer(
@@ -105,6 +105,15 @@ func decodeGetByItemIdCustomerIdRequest(_ context.Context, r *http.Request) (int
 	return g, nil
 }
 
+func decodeCreateReviewRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	request := CreateReviewRequest{}
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+			return nil, err
+	}
+	return request, nil
+}
+
 func decodeReviewRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	defer r.Body.Close()
 	review := reviews.Review{}
@@ -116,16 +125,11 @@ func decodeReviewRequest(_ context.Context, r *http.Request) (interface{}, error
 }
 
 func decodeDeleteReviewRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	d := deleteRequest{}
+	d := DeleteRequest{}
 	u := strings.Split(r.URL.Path, "/")
 	if len(u) == 3 {
 		d.Id = u[2]
 		return d, nil
 	}
 	return d, ErrInvalidRequest
-}
-
-type deleteRequest struct {
-	Entity string
-	Id     string
 }

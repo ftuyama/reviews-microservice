@@ -9,6 +9,7 @@ function insert_reviews(object) {
 }
 
 insert_reviews({
+    "id": "663b0fe99e94cc1a4fe701b1",
     "customerId": "57a98d98e4b00679b4a830b2",
     "itemId": "837ab141-399e-4c1f-9abc-bace40296bac",
     "createdAt": new Date("2024-04-24T00:09:22.198Z"),
@@ -18,6 +19,7 @@ insert_reviews({
 });
 
 insert_reviews({
+    "id": "663b0fe99e94cc1a4fe701b2",
     "customerId": "57a98d98e4b00679b4a830b2",
     "itemId": "808a2de1-1aaa-4c25-a9b9-6612e8f29a38",
     "createdAt": new Date("2024-04-25T00:09:22.198Z"),
@@ -27,6 +29,7 @@ insert_reviews({
 });
 
 insert_reviews({
+    "id": "663b0fe99e94cc1a4fe701b3",
     "customerId": "57a98d98e4b00679b4a830b5",
     "itemId": "837ab141-399e-4c1f-9abc-bace40296bac",
     "createdAt": new Date("2024-04-25T00:09:22.198Z"),
