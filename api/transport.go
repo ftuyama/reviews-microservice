@@ -26,25 +26,25 @@ func MakeHTTPHandler(e Endpoints, logger log.Logger, tracer stdopentracing.Trace
 	// 	httptransport.ServerErrorEncoder(encodeError),
 	// }
 
-	// GET /reviews/       							GetReviews
-	// GET /reviews/customer/{id}       GetReviewsByCustomerId
-	// GET /reviews/item/{id}           GetReviewsByItemId
-	// POST /reviews                    CreateReview
-	// DELETE /reviews/{id}             DeleteReview
+	// GET /reviews/       																	GetReviews
+	// GET /reviews/item/{item_id}customer/{customer_id}    GetReviewsByItemIdCustomerId
+	// GET /reviews/item/{item_id}           								GetReviewsByItemId
+	// POST /reviews                    										CreateReview
+	// DELETE /reviews/{id}             										DeleteReview
 
 	r.Methods("GET").Path("/reviews").Handler(httptransport.NewServer(
 		e.GetReviewsEndpoint,
 		decodeGetRequest,
 		encodeResponse,
 	))
-	r.Methods("GET").Path("/reviews/customer/{id}").Handler(httptransport.NewServer(
-		e.GetReviewsByCustomerIdEndpoint,
-		decodeGetRequest,
+	r.Methods("GET").Path("/reviews/item/{item_id}/customer/{customer_id}").Handler(httptransport.NewServer(
+		e.GetReviewsByItemIdCustomerIdEndpoint,
+		decodeGetByItemIdCustomerIdRequest,
 		encodeResponse,
 	))
-	r.Methods("GET").Path("/reviews/item/{id}").Handler(httptransport.NewServer(
+	r.Methods("GET").Path("/reviews/item/{item_id}").Handler(httptransport.NewServer(
 		e.GetReviewsByItemIdEndpoint,
-		decodeGetRequest,
+		decodeGetByItemIdRequest,
 		encodeResponse,
 	))
 	r.Methods("POST").Path("/reviews").Handler(httptransport.NewServer(
@@ -83,9 +83,24 @@ func encodeResponse(_ context.Context, w http.ResponseWriter, response interface
 
 func decodeGetRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	g := GetRequest{}
+	return g, nil
+}
+
+func decodeGetByItemIdRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	g := GetByItemIdRequest{}
 	u := strings.Split(r.URL.Path, "/")
 	if len(u) > 4 {
-		g.ID = u[4]
+		g.ItemId = u[4]
+	}
+	return g, nil
+}
+
+func decodeGetByItemIdCustomerIdRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	g := GetByItemIdCustomerIdRequest{}
+	u := strings.Split(r.URL.Path, "/")
+	if len(u) > 4 {
+		g.ItemId = u[4]
+		g.CustomerId = u[5]
 	}
 	return g, nil
 }
@@ -104,7 +119,7 @@ func decodeDeleteReviewRequest(_ context.Context, r *http.Request) (interface{},
 	d := deleteRequest{}
 	u := strings.Split(r.URL.Path, "/")
 	if len(u) == 3 {
-		d.ID = u[2]
+		d.Id = u[2]
 		return d, nil
 	}
 	return d, ErrInvalidRequest
@@ -112,5 +127,5 @@ func decodeDeleteReviewRequest(_ context.Context, r *http.Request) (interface{},
 
 type deleteRequest struct {
 	Entity string
-	ID     string
+	Id     string
 }

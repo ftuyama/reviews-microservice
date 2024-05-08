@@ -11,22 +11,22 @@ import (
 
 // Endpoints collects the endpoints that comprise the Service.
 type Endpoints struct {
-	GetReviewsEndpoint 						 endpoint.Endpoint
-	GetReviewsByCustomerIdEndpoint endpoint.Endpoint
-	GetReviewsByItemIdEndpoint     endpoint.Endpoint
-	CreateReviewEndpoint           endpoint.Endpoint
-	DeleteReviewEndpoint           endpoint.Endpoint
+	GetReviewsEndpoint 						 				endpoint.Endpoint
+	GetReviewsByItemIdCustomerIdEndpoint  endpoint.Endpoint
+	GetReviewsByItemIdEndpoint     				endpoint.Endpoint
+	CreateReviewEndpoint           				endpoint.Endpoint
+	DeleteReviewEndpoint           				endpoint.Endpoint
 }
 
 // MakeEndpoints returns an Endpoints structure, where each endpoint is
 // backed by the given service.
 func MakeEndpoints(s Service, tracer stdopentracing.Tracer) Endpoints {
 	return Endpoints{
-		GetReviewsEndpoint: 						opentracing.TraceServer(tracer, "GET /reviews")(MakeGetReviewsEndpoint(s)),
-		GetReviewsByCustomerIdEndpoint: opentracing.TraceServer(tracer, "GET /reviews/customer/{id}")(MakeGetReviewsByCustomerIdEndpoint(s)),
-		GetReviewsByItemIdEndpoint:     opentracing.TraceServer(tracer, "GET /reviews/item/{id}")(MakeGetReviewsByItemIdEndpoint(s)),
-		CreateReviewEndpoint:           opentracing.TraceServer(tracer, "POST /reviews")(MakeCreateReviewEndpoint(s)),
-		DeleteReviewEndpoint:           opentracing.TraceServer(tracer, "DELETE /reviews/{id}")(MakeDeleteReviewEndpoint(s)),
+		GetReviewsEndpoint: 									opentracing.TraceServer(tracer, "GET /reviews")(MakeGetReviewsEndpoint(s)),
+		GetReviewsByItemIdCustomerIdEndpoint: opentracing.TraceServer(tracer, "GET /reviews/item/{item_id}/customer/{customer_id}")(MakeGetReviewsByItemIdCustomerIdEndpoint(s)),
+		GetReviewsByItemIdEndpoint:     			opentracing.TraceServer(tracer, "GET /reviews/item/{item_id}")(MakeGetReviewsByItemIdEndpoint(s)),
+		CreateReviewEndpoint:           			opentracing.TraceServer(tracer, "POST /reviews")(MakeCreateReviewEndpoint(s)),
+		DeleteReviewEndpoint:           			opentracing.TraceServer(tracer, "DELETE /reviews/{id}")(MakeDeleteReviewEndpoint(s)),
 	}
 }
 
@@ -38,11 +38,11 @@ func MakeGetReviewsEndpoint(s Service) endpoint.Endpoint {
 	}
 }
 
-// MakeGetReviewsByCustomerIdEndpoint returns an endpoint via the given service.
-func MakeGetReviewsByCustomerIdEndpoint(s Service) endpoint.Endpoint {
+// MakeGetReviewsByItemIdCustomerIdEndpoint returns an endpoint via the given service.
+func MakeGetReviewsByItemIdCustomerIdEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(GetRequest)
-		reviews, err := s.GetReviewsByCustomerId(req.ID)
+		req := request.(GetByItemIdCustomerIdRequest)
+		reviews, err := s.GetReviewsByItemIdCustomerId(req.ItemId, req.CustomerId)
 		return reviewsResponse{Reviews: reviews}, err
 	}
 }
@@ -50,8 +50,8 @@ func MakeGetReviewsByCustomerIdEndpoint(s Service) endpoint.Endpoint {
 // MakeGetReviewsByItemIdEndpoint returns an endpoint via the given service.
 func MakeGetReviewsByItemIdEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(GetRequest)
-		reviews, err := s.GetReviewsByItemId(req.ID)
+		req := request.(GetByItemIdRequest)
+		reviews, err := s.GetReviewsByItemId(req.ItemId)
 		return reviewsResponse{Reviews: reviews}, err
 	}
 }
@@ -70,7 +70,7 @@ func MakeCreateReviewEndpoint(s Service) endpoint.Endpoint {
 func MakeDeleteReviewEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(DeleteRequest)
-		err = s.DeleteReview(req.ID)
+		err = s.DeleteReview(req.Id)
 		if err == nil {
 			return statusResponse{Status: true}, err
 		}
@@ -79,8 +79,18 @@ func MakeDeleteReviewEndpoint(s Service) endpoint.Endpoint {
 }
 
 type GetRequest struct {
-	ID   string
-	Attr string
+	Attr   string
+}
+
+type GetByItemIdRequest struct {
+	ItemId string
+	Attr   string
+}
+
+type GetByItemIdCustomerIdRequest struct {
+	ItemId 		 string
+	CustomerId string
+	Attr   		 string
 }
 
 type reviewsResponse struct {
@@ -92,7 +102,7 @@ type CreateReviewRequest struct {
 }
 
 type DeleteRequest struct {
-	ID string `json:"id"`
+	Id string `json:"id"`
 }
 
 type statusResponse struct {
@@ -100,5 +110,5 @@ type statusResponse struct {
 }
 
 type postResponse struct {
-	ID string `json:"id"`
+	Id string `json:"id"`
 }

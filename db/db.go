@@ -14,7 +14,7 @@ type Database interface {
 	Init() error
 	CreateReview(*reviews.Review) error
 	GetReviews() ([]reviews.Review, error)
-	GetReviewsByCustomerId(string) ([]reviews.Review, error)
+	GetReviewsByItemIdCustomerId(string, string) ([]reviews.Review, error)
 	GetReviewsByItemId(string) ([]reviews.Review, error)
 	DeleteReview(string) error
 }
@@ -93,9 +93,9 @@ func GetReviews() ([]reviews.Review, error) {
 	return DefaultDb.GetReviews()
 }
 
-// GetReviewsByCustomerId invokes DefaultDb method to get reviews by customer ID.
-func GetReviewsByCustomerId(customerId string) ([]reviews.Review, error) {
-	return DefaultDb.GetReviewsByCustomerId(customerId)
+// GetReviewsByItemIdCustomerId invokes DefaultDb method to get reviews by customer ID.
+func GetReviewsByItemIdCustomerId(itemId string, customerId string) ([]reviews.Review, error) {
+	return DefaultDb.GetReviewsByItemIdCustomerId(itemId, customerId)
 }
 
 // GetReviewsByItemId invokes DefaultDb method to get reviews by item ID.

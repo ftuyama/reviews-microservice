@@ -18,7 +18,7 @@ var (
 type Service interface {
 	CreateReview(review *reviews.Review) (reviews.Review, error)
 	GetReviews() ([]reviews.Review, error)
-	GetReviewsByCustomerId(customerId string) ([]reviews.Review, error)
+	GetReviewsByItemIdCustomerId(itemId string, customerId string) ([]reviews.Review, error)
 	GetReviewsByItemId(itemId string) ([]reviews.Review, error)
 	DeleteReview(id string) error
 }
@@ -40,8 +40,8 @@ func (s *fixedService) GetReviews() ([]reviews.Review, error) {
 	return reviews, err
 }
 
-func (s *fixedService) GetReviewsByCustomerId(customerId string) ([]reviews.Review, error) {
-	reviews, err := db.GetReviewsByCustomerId(customerId)
+func (s *fixedService) GetReviewsByItemIdCustomerId(itemId string, customerId string) ([]reviews.Review, error) {
+	reviews, err := db.GetReviewsByItemIdCustomerId(itemId, customerId)
 	return reviews, err
 }
 
